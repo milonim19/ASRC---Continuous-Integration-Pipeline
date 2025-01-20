@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+	<body>
+
+		<h1>Have you recently tested positive for COVID-19?</h1>
+
+		<form>  
+		  <input type="radio" name="positive" value="yes" id="button1" checked>Yes<br>
+		  <input type="radio" name="positive" value="no" id="button2">No<br>
+		</form>
+		<button onclick="switchPage()">Click me</button> 
+		<script>
+			function switchPage(){
+				var button1 = document.getElementById("button1");
+				var button2 = document.getElementById("button2");
+
+				if (button1.checked){
+					window.location.href = './contactSelection.html';
+					
+				}else if (button2.checked) {
+					window.location.href = './goodbyePage.html';
+				}
+			}
+					
+		</script>
+
+		
+	</body>
+</html>

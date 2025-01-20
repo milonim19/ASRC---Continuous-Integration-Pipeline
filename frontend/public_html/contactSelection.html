@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+	<body>
+
+		<h1>Please select which employees you have had close contact with the past 10 days.</h1>	
+		<script>
+			var response;
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+				   response = xhr.responseText;
+				   response = JSON.parse(response);
+					let checkbox = document.createElement('checkbox');
+					checkbox.id = "myCheckbox"
+					let temp = '<form>';
+					for(var i = 0; i < response.length; i++){
+						temp += "<input type='checkbox' name='employees' value='" + response[i].name + "' onClick='deselectNone()' id='" + response[i].name + "'>" 
+						+ response[i].name + "<br>"
+					}
+					temp += "<input type='checkbox' name='employees' value='No one' onClick='deselectAll()' id='No One' checked>No One<br></form>";
+					temp += "<button onclick='sendContacts()'>Click me</button>"
+					checkbox.innerHTML = temp;
+					document.body.appendChild(checkbox);
+				}
+			};
+			var email;
+			if(typeof(Storage)!=="undefined" && localStorage.email)
+			  {
+				email = localStorage.email;
+				console.log(email);
+			  }
+			else
+			  {
+				email = "";
+			  }
+			xhr.open("GET", "http://127.0.0.1:8080/getList/?email=" + encodeURIComponent(email), true);
+			xhr.send();
+			
+			function deselectAll(){
+				if (document.getElementById("No One").checked){
+					for(var i = 0; i < response.length; i++){
+						document.getElementById(response[i].name).checked = false;
+					}
+				}
+			}
+			function deselectNone(){
+				for(var i = 0; i < response.length; i++){
+					if(document.getElementById(response[i].name).checked){
+						document.getElementById("No One").checked = false;
+					}
+				}
+			}
+			
+			function sendContacts(){
+				var employees = [];
+				if (!document.getElementById("No One").checked){
+					for(var i = 0; i < response.length; i++){
+						if(document.getElementById(response[i].name).checked){
+							employees.push(response[i]);
+						}
+					}
+					console.log({employees});
+					console.log(JSON.stringify(employees));
+					var respond = new XMLHttpRequest();
+					respond.onreadystatechange = function() {
+						setTimeout(function(){
+							window.location.href = './goodbyePage.html';
+						}, 500);
+					}
+					respond.open("POST", "http://127.0.0.1:8080/email", true);
+					respond.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+					respond.send(JSON.stringify(employees));
+				}
+				else{
+					window.location.href = './goodbyePage.html';
+				}
+				
+			}
+		</script>
+	</body>
+</html>
